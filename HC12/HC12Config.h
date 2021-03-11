@@ -1,44 +1,81 @@
 #pragma once
 #include <string>
 
-/*Refer to .pdf nearby to know parameters*/
-
 /*
     Struct that stores parameters:
+    - Fuse
+    - Channel
+    - Power
+    - Baudrate
+
+    Only parses and converts to device readable strings 
+    not working with actual device, use overlay instead.
+
+    Based on HC-12_english_datasheets.pdf nearby
 */
 class HC12Config {
+public:
     /* Parses line in format: OK+FU3\r\nOK+B9600\r\nOK+C001\r\nOK+RP:+20dBm\r\n */
     void parse(std::string);
+    
+    /* factory default setting, FU3, Baud 9600, Channel 1, Power 8 */
+    void set_default();
+
+    std::string radio_default_AT();
+    std::string radio_get_parameters_AT();
+
+    void to_string();
+
+/* == Individual parameter configuration below === */
+
+private:
     int fuse;
+    /*
+    AT+FUx
+    FU1: low current(3.6mA), short comm distance
+    FU2: B1200, B2400, B4800 only 20 byte max (2 sec CD) 0.08 mA idle
+    FU3: default
+    FU4: B1200 only, 60 bytes (2 sec CD), ultra long range
+    */
+public:
+    void set_radio_fuse(int fuse);
+    int  get_radio_fuse();
+    // OK+C001
+    void parse_radio_baudrate(std::string);
+    // AT+FUx
+    std::string radio_fuse_AT_string();
+    // out fuse FUx
+    std::string radio_fuse_to_string();
 
+/* ======================================================= */
 
-
-
-
+private:
     int baudrate;
     /*
     AT+B<baudrate>
 
-    1200 bps     -- 5000bps in air (-117dBm sens) base * ~1.7
+    1200 bps     -- 5000bps in air (-116dBm sens) base * ~1.7
     2400 bps     --/
-    4800 bps     --- 15000bps in air (-112dBm sens) base distance
+    4800 bps     --- 15000bps in air (-111dBm sens) base distance
     9600 bps     ---/
-    19200 bps    ---- 58000bps in air (-107dBm sens) base / ~1.7
+    19200 bps    ---- 58000bps in air (-106dBm sens) base / ~1.7
     38400 bps    ----/
     57600 bps    ----- 236000bps in air (-100dBm sens) base / ~4.5
     115200 bps   -----/
 
     returns OK+B<baudrate>
     */
+public:
     // [ 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 ]
-    void set_radio_baudrate(int radio_channel);
+    void set_radio_baudrate(int baudrate);
     int  get_radio_baudrate();
     // OK+C001
     void parse_radio_baudrate(std::string);
     // AT+Cx
+    std::string radio_baudrate_AT_string();
+    // out baudrate value
     std::string radio_baudrate_to_string();
-    // x
-    std::string radio_baudrate_to_human_readible_string();
+
 /* ======================================================= */
 
 private:
@@ -57,9 +94,9 @@ public:
     // OK+C001
     void parse_radio_channel(std::string);
     // AT+Cx
+    std::string radio_channel_AT_string();
+    // out radio channel setting
     std::string radio_channel_to_string();
-    // x
-    std::string radio_channel_to_human_readible_string();
 
 /* ======================================================= */
 
@@ -86,7 +123,7 @@ public:
     // OK+RP:+20dBm
     void parse_radio_power(std::string);
     //AT+Px
+    std::string radio_power_AT_string();
+    //out number for power setting
     std::string radio_power_to_string();
-    //x
-    std::string radio_power_to_human_readable_string();
 };
