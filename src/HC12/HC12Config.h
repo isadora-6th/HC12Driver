@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+#include "HC12ConfigParser.h"
+
 /*
     Struct that stores parameters:
     - Fuse
@@ -13,6 +15,8 @@
 
     Based on HC-12_english_datasheets.pdf nearby
 */
+
+
 class HC12Config {
 public:
     /* Parses line in format:*/
@@ -20,17 +24,19 @@ public:
     void parse_parameters_AT_response(std::string);
     
     /* factory default setting, FU3, Baud 9600, Channel 1, Power 8 */
-    void set_default();
+    void set_factory_default();
 
     std::string radio_set_default_AT();
     std::string radio_get_parameters_AT();
 
     std::string to_string();
 
+    bool is_valid();
+
 /* === Individual parameter configuration below === */
 
 private:
-    int fuse;
+    int fuse = -1;
     /*
     AT+FUx
     FU1: low current(3.6mA), short comm distance
@@ -45,7 +51,7 @@ public:
     void set_radio_fuse(int fuse);
     int  get_radio_fuse();
     // OK+FUx
-    void parse_radio_fuse(std::string);
+    void parse_radio_fuse_AT(std::string);
     // AT+FUx
     std::string radio_fuse_AT_string();
     // out fuse FUx
@@ -54,7 +60,7 @@ public:
 /* ======================================================= */
 
 private:
-    int baudrate;
+    int baudrate = -1;
     /*
     AT+B<baudrate>
 
@@ -74,7 +80,7 @@ public:
     void set_radio_baudrate(int baudrate);
     int  get_radio_baudrate();
     // OK+Bxxxx
-    void parse_radio_baudrate(std::string);
+    void parse_radio_baudrate_AT(std::string);
     // AT+Bxxx
     std::string radio_baudrate_AT_string();
     // out baudrate value
@@ -83,7 +89,7 @@ public:
 /* ======================================================= */
 
 private:
-    int channel;
+    int channel = -1;
     /*
     AT+C<channel> [1-127] (>100 not reliable range)
     Close range (<10m -> use with spaces between used channels [skipping 1])
@@ -96,7 +102,7 @@ public:
     void set_radio_channel(int radio_channel);
     int  get_radio_channel();
     // OK+C001
-    void parse_radio_channel(std::string);
+    void parse_radio_channel_AT(std::string);
     // AT+Cx
     std::string radio_channel_AT_string();
     // out radio channel setting
@@ -105,7 +111,7 @@ public:
 /* ======================================================= */
 
 private:
-    int radio_power;
+    int radio_power = -1;
     /*
         AT+P<radio_power> [1-8]
         where <radio_power> = 1 number:
@@ -125,7 +131,7 @@ public:
     void set_radio_power(int radio_power);
     int  get_radio_power(void);
     // OK+RP:+20dBm
-    void parse_radio_power(std::string);
+    void parse_radio_power_AT(std::string);
     //AT+Px
     std::string radio_power_AT_string();
     //out number for power setting

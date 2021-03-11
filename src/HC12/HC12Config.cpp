@@ -3,32 +3,47 @@
 
 #ifdef ESP8266
     #include <Arduino.h>
-    #include "stdlib_noniso.h"
-    #define compat_std_stoi( IN_STRING, OUT_VAR ) OUT_VAR = atol(IN_STRING.c_str())
-
-    #define HC12_CONFIG_PARSE_ERROR(X) Serial.println(std::string(X).c_str())
     #define HC12_CONFIG_SET_OUT_OF_RANGE(X) Serial.println(std::string(X).c_str())
 #else
     #include <stdexcept>
-    #define compat_std_stoi( IN_STRING, OUT_VAR ) \
-    try { \
-        OUT_VAR = std::stoi(IN_STRING.c_str()); \
-    } catch (std::invalid_argument& ia){ \
-        OUT_VAR = 0; \
-    }
-
     #include <iostream>
-    #define HC12_CONFIG_PARSE_ERROR(X) std::cout << X << '\n'
     #define HC12_CONFIG_SET_OUT_OF_RANGE(X) std::cout << X << '\n'
 
 #endif
 
 void HC12Config::parse_parameters_AT_response(std::string text){
     // OK+FU3 \r\n    OK+B9600 \r\n   OK+C001 \r\n OK+RP：+20dBm \r\n
-
+    int found_index = 0;
+    int begin = 0;
+    while (text.find("OK+",begin)){
+        int end = text.find(" ",begin);
+        if(end == -1){
+            end = text.length();
+        }
+        switch (found_index){
+        case 0:
+            parse_radio_fuse_AT( text.substr(begin, end - begin) );
+            break;
+        case 1:
+            parse_radio_baudrate_AT( text.substr(begin, end - begin) );
+            break;
+        case 2:
+            parse_radio_channel_AT( text.substr(begin, end - begin) );
+            break;
+        case 3:
+            parse_radio_power_AT( text.substr(begin, end - begin) );
+            break;
+        
+        default:
+            return;
+        }
+        found_index += 1;
+        begin += 1;
+    }
+    
 }
 
-void HC12Config::set_default(){
+void HC12Config::set_factory_default(){
     set_radio_fuse(3);
     set_radio_baudrate(9600);
     set_radio_channel(1);
@@ -62,6 +77,10 @@ std::string HC12Config::to_string(){
     return out;
 }
 
+bool HC12Config::is_valid(){
+    return fuse != -1 && baudrate != -1 && channel != -1 && radio_power != -1;
+}
+
 /* === Individual parameter configuration below === */
 
 void HC12Config::set_radio_fuse(int fuse){
@@ -80,24 +99,9 @@ int HC12Config::get_radio_fuse(){
     return fuse;
 }
 
-void HC12Config::parse_radio_fuse(std::string text){
-    // OK+FUx
-
-    int start = text.find("OK+FU");
-    if( start == -1 ){
-        HC12_CONFIG_PARSE_ERROR("fuse parsing error \"OK+FU\" not found");
-        return;
-    }
-    std::string data = text.substr( start + 5, 1);
-
-    int value;
-    compat_std_stoi(data, value);
-
-    if(value == 0){
-        HC12_CONFIG_PARSE_ERROR(
-            std::string("parse fuse error, can't process: ")+
-            data
-            );
+void HC12Config::parse_radio_fuse_AT(std::string text){
+    int value = HC12ConfigParser::parse_radio_fuse_AT(text);
+    if(value == -1){
         return;
     }
     set_radio_fuse(value);
@@ -141,25 +145,9 @@ int  HC12Config::get_radio_baudrate(){
     return baudrate;
 }
 
-void HC12Config::parse_radio_baudrate(std::string text){
-    // OK+Bxxxx
-
-    int start = text.find("OK+B");
-    if( start == -1 ){
-        HC12_CONFIG_PARSE_ERROR("fuse parsing error \"OK+B\" not found");
-        return;
-    }
-    int end = text.find(" ", start);
-    std::string data = text.substr( start + 4, end - start);
-
-    int value;
-    compat_std_stoi(data, value);
-
-    if(value == 0){
-        HC12_CONFIG_PARSE_ERROR(
-            std::string("parse baud error, can't process: ")+
-            data
-            );
+void HC12Config::parse_radio_baudrate_AT(std::string text){
+    int value = HC12ConfigParser::parse_radio_baudrate_AT(text);
+    if(value == -1){
         return;
     }
     set_radio_baudrate(value);
@@ -193,29 +181,11 @@ int  HC12Config::get_radio_channel(){
     return channel;
 }
 
-void HC12Config::parse_radio_channel(std::string text){
-    // OK+Cxxxx
-
-    int start = text.find("OK+C");
-    if( start == -1 ){
-        HC12_CONFIG_PARSE_ERROR("fuse parsing error \"OK+C\" not found");
+void HC12Config::parse_radio_channel_AT(std::string text){
+    int value = HC12ConfigParser::parse_radio_baudrate_AT(text);
+    if(value == -1){
         return;
     }
-    int end = text.find(" ", start);
-    std::string data = text.substr( start + 4, end - start);
-    // data "001"
-
-    int value;
-    compat_std_stoi(data, value);
-
-    if(value == 0){
-        HC12_CONFIG_PARSE_ERROR(
-            std::string("parse channel error, can't process: ")+
-            data
-            );
-        return;
-    }
-
     set_radio_channel(value);
 }
 
@@ -251,30 +221,12 @@ int  HC12Config::get_radio_power(void){
     return radio_power;
 }
 
-void HC12Config::parse_radio_power(std::string text){
-    // OK+Pxxxx
-
-    int start = text.find("OK+RP:");
-    if( start == -1 ){
-        HC12_CONFIG_PARSE_ERROR("fuse parsing error \"OK+C\" not found");
+void HC12Config::parse_radio_power_AT(std::string text){
+    int value = HC12ConfigParser::parse_radio_baudrate_AT(text);
+    if(value == -1){
         return;
     }
-    int end = text.find(" ", start);
-    std::string data = text.substr( start + 4, end - start);
-    // data "001"
-
-    int value;
-    compat_std_stoi(data, value);
-
-    if(value == 0){
-        HC12_CONFIG_PARSE_ERROR(
-            std::string("parse channel error, can't process: ")+
-            data
-            );
-        return;
-    }
-
-    set_radio_channel(value);
+    set_radio_power(value);
 }
 
 std::string HC12Config::radio_power_AT_string(){
