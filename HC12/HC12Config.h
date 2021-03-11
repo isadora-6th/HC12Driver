@@ -15,18 +15,19 @@
 */
 class HC12Config {
 public:
-    /* Parses line in format: OK+FU3\r\nOK+B9600\r\nOK+C001\r\nOK+RP:+20dBm\r\n */
+    /* Parses line in format:*/
+    // OK+FU3 \r\n    OK+B9600 \r\n   OK+C001 \r\n OK+RP：+20dBm \r\n
     void parse(std::string);
     
     /* factory default setting, FU3, Baud 9600, Channel 1, Power 8 */
     void set_default();
 
-    std::string radio_default_AT();
+    std::string radio_set_default_AT();
     std::string radio_get_parameters_AT();
 
     void to_string();
 
-/* == Individual parameter configuration below === */
+/* === Individual parameter configuration below === */
 
 private:
     int fuse;
@@ -36,8 +37,11 @@ private:
     FU2: B1200, B2400, B4800 only 20 byte max (2 sec CD) 0.08 mA idle
     FU3: default
     FU4: B1200 only, 60 bytes (2 sec CD), ultra long range
+
+    return OK+FU<x>;
     */
 public:
+    // [ 1, 2, 3, 4 ]
     void set_radio_fuse(int fuse);
     int  get_radio_fuse();
     // OK+C001
@@ -85,7 +89,7 @@ private:
     Close range (<10m -> use with spaces between used channels [skipping 1])
     ! doc has sth strange about nearby channels when short distance used
 
-    returns COK+C<channel> [ %3b actually with starting zeros 21 -> 021]
+    returns OK+RC<channel> [ %3b actually with starting zeros 21 -> 021]
     */
 public:
     // [1-127]
