@@ -18,7 +18,7 @@
     HC12Config config;
 
     if(driver.isPresent()){
-        config = checkDeviceConfiguration();
+        config = readDeviceConfiguration();
         if(config.is_valid()){
             config.set_radio_channel( CHANNEL_TO_SET  );
             if( !driver.updateDeviceConfiguration(config) ){
@@ -76,7 +76,7 @@ public:
     void setSetPin(int);
 
     /* Stops work, to get parameters */
-    HC12Config checkDeviceConfiguration();
+    HC12Config readDeviceConfiguration();
     HC12Config getSavedDeviceConfiguration();
 
     /* Apply changes to external module if changes spoted */

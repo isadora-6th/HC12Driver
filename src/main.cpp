@@ -19,10 +19,10 @@ void setup(){
     }
 
     /* === Configuration Part ===*/
-    HC12Config config = driver.checkDeviceConfiguration();
+    HC12Config config = driver.readDeviceConfiguration();
     if( !config.is_valid() ){
         // Config read somehow failed, consider edit timings in HC12Driver.cpp
-        // checkDeviceConfiguration also edits wasPresent() state
+        // readDeviceConfiguration also edits wasPresent() state
     }
 
     config.set_radio_channel( CHANNEL_TO_SET );
