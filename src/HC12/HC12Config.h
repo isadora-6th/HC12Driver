@@ -17,7 +17,7 @@ class HC12Config {
 public:
     /* Parses line in format:*/
     // OK+FU3 \r\n    OK+B9600 \r\n   OK+C001 \r\n OK+RP：+20dBm \r\n
-    void parse(std::string);
+    void parse_parameters_AT_response(std::string);
     
     /* factory default setting, FU3, Baud 9600, Channel 1, Power 8 */
     void set_default();
@@ -25,7 +25,7 @@ public:
     std::string radio_set_default_AT();
     std::string radio_get_parameters_AT();
 
-    void to_string();
+    std::string to_string();
 
 /* === Individual parameter configuration below === */
 
@@ -44,8 +44,8 @@ public:
     // [ 1, 2, 3, 4 ]
     void set_radio_fuse(int fuse);
     int  get_radio_fuse();
-    // OK+C001
-    void parse_radio_baudrate(std::string);
+    // OK+FUx
+    void parse_radio_fuse(std::string);
     // AT+FUx
     std::string radio_fuse_AT_string();
     // out fuse FUx

@@ -35,7 +35,7 @@ int HardwareSerial::readBytes(uint8_t* buffer, int length){
     return was_read;
 }
 
-int HardwareSerial::write(int n){
+void HardwareSerial::write(int n){
     std::cout << "n" << std::endl;
 }
 

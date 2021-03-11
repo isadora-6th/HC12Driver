@@ -16,7 +16,7 @@ public:
     int read();
     int readBytes(uint8_t* buffer, int size);
 
-    int write(int n);
+    void write(int n);
 
     void debug_target(std::string);
 };
