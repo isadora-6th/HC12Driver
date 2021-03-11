@@ -1,7 +1,12 @@
 #include "SerialHAL.h"
 #include <iostream>
+#ifndef ESP8266
 
-HardwareSerial::HardwareSerial(){
+void delay(int){
+    
+}
+
+HardwareSerial::HardwareSerial(int val){
     baudrate = 0;
     target = "";
     index = 0;
@@ -39,7 +44,12 @@ void HardwareSerial::write(int n){
     std::cout << "n" << std::endl;
 }
 
+void HardwareSerial::write(std::string t){
+    std::cout << t << std::endl;
+}
+
 void HardwareSerial::debug_target(std::string t){
     target = t;
     index = 0;
 }
+#endif

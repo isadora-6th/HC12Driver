@@ -73,9 +73,9 @@ public:
     // [ 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 ]
     void set_radio_baudrate(int baudrate);
     int  get_radio_baudrate();
-    // OK+C001
+    // OK+Bxxxx
     void parse_radio_baudrate(std::string);
-    // AT+Cx
+    // AT+Bxxx
     std::string radio_baudrate_AT_string();
     // out baudrate value
     std::string radio_baudrate_to_string();
