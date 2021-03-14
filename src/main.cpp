@@ -36,8 +36,16 @@ void setup(){
     config.set_radio_power( 7 );
     driver.updateDeviceConfiguration(config);
 
+    #ifdef ESP32
+        driver.getSerial()->updateBaudRate(921600);
+    #endif
+    #ifdef ESP8266
+        driver.getSerial()->begin(921600);
+    #endif
+    #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)
+        driver.getSerial()->begin(921600);
+    #endif
 
-    driver.getSerial()->updateBaudRate(921600);
     delay(150);
 
     driver.println("Hello my dear friend");

@@ -6,8 +6,17 @@
 
 #ifdef ESP8266
     #define HC12Driver_COMPAT_BAUD_CHANGE(serial_ptr, baudrate) serial_ptr->updateBaudRate(baudrate);
-    #define HC12Driver_COMPAT_GET_BAUD_SPEED(serial_ptr) serial_ptr->baudRate()
+    #define HC12Driver_COMPAT_COMPARE_BAUD_SPEED(serial_ptr, target) (serial_ptr->baudRate() != target)
 #endif
+#ifdef ESP32
+    #define HC12Driver_COMPAT_BAUD_CHANGE(serial_ptr, baudrate) serial_ptr->updateBaudRate(baudrate);
+    #define HC12Driver_COMPAT_COMPARE_BAUD_SPEED(serial_ptr, target) (abs( ((long) serial_ptr->baudRate()) - target) > 15 )
+#endif
+#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)
+    #define HC12Driver_COMPAT_BAUD_CHANGE(serial_ptr, baudrate) serial_ptr->begin(baudrate);
+    #define HC12Driver_COMPAT_COMPARE_BAUD_SPEED(serial_ptr, target) false /* external tool req for getting baudate :c */
+#endif
+
 HC12Driver::HC12Driver(HardwareSerial* serial, int set_pin, STATE state_start){
     setSerial(serial);
     setSetPin(set_pin);
@@ -156,6 +165,10 @@ int HC12Driver::peek() {
     return serial->peek();
 }
 
+void HC12Driver::flush(){
+    serial->flush();
+}
+
 size_t HC12Driver::write(uint8_t data){
     return serial->write(data);
 }
@@ -175,7 +188,7 @@ std::string HC12Driver::send_AT(std::string at_string, int time_wait) {
         baudrate_speed = current_config.get_radio_baudrate();
     }
     
-    if( HC12Driver_COMPAT_GET_BAUD_SPEED(serial) != baudrate_speed ){
+    if( HC12Driver_COMPAT_COMPARE_BAUD_SPEED(serial, baudrate_speed) ){
         HC12Driver_COMPAT_BAUD_CHANGE(serial, baudrate_speed);
         delay(HC12Driver_BAUD_CHANGE_TIME);
     }

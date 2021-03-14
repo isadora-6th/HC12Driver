@@ -92,6 +92,10 @@ public:
     /* Print api */
     size_t write(uint8_t) override;
 
+    #ifdef ESP32
+        void flush() override;
+    #endif
+
 public:
 
     // Ignore presence state (if RX not connected, or manual work using buttons)

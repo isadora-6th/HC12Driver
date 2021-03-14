@@ -7,24 +7,25 @@
     #define compat_std_stoi( IN_STRING, OUT_VAR ) OUT_VAR = atol(IN_STRING.c_str())
 
     #define HC12_CONFIG_PARSE_ERROR(X)// Serial.println(std::string(X).c_str())
-#else
-    #include <stdexcept>
-    #define compat_std_stoi( IN_STRING, OUT_VAR ) \
-    try { \
-        OUT_VAR = std::stoi(IN_STRING.c_str()); \
-    } catch (std::invalid_argument& ia){ \
-        OUT_VAR = 0; \
-    }
+#endif
+#ifdef ESP32
+    #include <Arduino.h>
+    #include "stdlib_noniso.h"
+    #define compat_std_stoi( IN_STRING, OUT_VAR ) OUT_VAR = atol(IN_STRING.c_str())
 
-    #include <iostream>
-    #define HC12_CONFIG_PARSE_ERROR(X) std::cout << X << '\n'
+    #define HC12_CONFIG_PARSE_ERROR(X)// Serial.println(std::string(X).c_str())
+#endif
+#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)
+    #include <stdlib.h>
+    #define compat_std_stoi( IN_STRING, OUT_VAR ) OUT_VAR = atol(IN_STRING.c_str())
+    #define HC12_CONFIG_PARSE_ERROR(X)// Serial.println(std::string(X).c_str())
 #endif
 
 HC12ConfigParser::HC12ConfigParser(){
-    
+
 }
 
-int HC12ConfigParser::parse_radio_fuse_AT(std::string text){
+long HC12ConfigParser::parse_radio_fuse_AT(std::string text){
     // OK+FUx
     std::size_t start = text.find("OK+FU");
     if( start == std::string::npos ){
@@ -33,7 +34,7 @@ int HC12ConfigParser::parse_radio_fuse_AT(std::string text){
     }
     std::string data = text.substr( start + 5, 1);
 
-    int value;
+    long value;
     compat_std_stoi(data, value);
 
     if(value == 0){
@@ -46,7 +47,7 @@ int HC12ConfigParser::parse_radio_fuse_AT(std::string text){
     return value;
 }
 
-int HC12ConfigParser::parse_radio_baudrate_AT(std::string text){
+long HC12ConfigParser::parse_radio_baudrate_AT(std::string text){
     // OK+Bxxxx
 
     std::size_t start = text.find("OK+B");
@@ -60,7 +61,7 @@ int HC12ConfigParser::parse_radio_baudrate_AT(std::string text){
     }
     std::string data = text.substr( start + 4, end - start);
 
-    int value;
+    long value;
     compat_std_stoi(data, value);
 
     if(value == 0){
@@ -73,7 +74,7 @@ int HC12ConfigParser::parse_radio_baudrate_AT(std::string text){
     return value;
 }
 
-int HC12ConfigParser::parse_radio_channel_AT(std::string text){
+long HC12ConfigParser::parse_radio_channel_AT(std::string text){
     // OK+Cxxxx
     
     std::size_t start = text.find("OK+RC");
@@ -89,7 +90,7 @@ int HC12ConfigParser::parse_radio_channel_AT(std::string text){
     std::string data = text.substr( start + 5, end - start);
     // data "001"
 
-    int value;
+    long value;
     compat_std_stoi(data, value);
 
     if(value == 0){
@@ -102,7 +103,7 @@ int HC12ConfigParser::parse_radio_channel_AT(std::string text){
     return value;
 }
 
-int HC12ConfigParser::parse_radio_power_AT(std::string text){
+long HC12ConfigParser::parse_radio_power_AT(std::string text){
     // OK+Pxxxx
 
     std::size_t start = text.find("OK+RP:");
@@ -116,7 +117,7 @@ int HC12ConfigParser::parse_radio_power_AT(std::string text){
     }
     std::string data = text.substr( start + 6, end - start);
     
-    int value = -1;
+    long value = -1;
     if( text.find("-1dBm") != std::string::npos ){
         value = 1;
     } else if(text.find("+2dBm") != std::string::npos ){
@@ -163,26 +164,26 @@ HC12Config HC12ConfigParser::parse_parameters_AT_response(std::string text){
         switch (found_index){
         case 0:
             {
-                int got = parse_radio_baudrate_AT( text.substr(begin, end - begin) );
+                long got = parse_radio_baudrate_AT( text.substr(begin, end - begin) );
                 out.set_radio_baudrate(got);
 
             }
             break;
         case 1:
             {
-                int got = parse_radio_channel_AT( text.substr(begin, end - begin) );
+                long got = parse_radio_channel_AT( text.substr(begin, end - begin) );
                 out.set_radio_channel(got);
             }
             break;
         case 2:
             {
-                int got = parse_radio_power_AT( text.substr(begin, end - begin) );
+                long got = parse_radio_power_AT( text.substr(begin, end - begin) );
                 out.set_radio_power(got);
             }
             break;
         case 3:
             {
-                int got = parse_radio_fuse_AT( text.substr(begin, end - begin) );
+                long got = parse_radio_fuse_AT( text.substr(begin, end - begin) );
                 out.set_radio_fuse(got);
             }
             break;

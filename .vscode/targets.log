@@ -8,7 +8,7 @@ make.exe: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Mar 11 20:30:37 2021
+# Make data base, printed on Mon Mar 15 01:48:31 2021
 
 # Variables
 
@@ -39,7 +39,7 @@ HOMEDRIVE = C:
 # automatic
 ^D = $(patsubst %/,%,$(patsubst %\,%,$(dir $^)))
 # makefile
-CURDIR := c:/Users/Asus/Documents/PlatformIO/Projects/8266_tests
+CURDIR := c:/Users/Asus/Desktop/RadioAPI
 # default
 SHELL := sh.exe
 # environment
@@ -53,7 +53,7 @@ MAKEFILE_LIST :=
 # environment
 FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
-VSCODE_NODE_CACHED_DATA_DIR = C:\Users\Asus\AppData\Roaming\Code\CachedData\f30a9b73e8ffc278e71575118b6bf568f04587c8
+VSCODE_NODE_CACHED_DATA_DIR = C:\Users\Asus\AppData\Roaming\Code\CachedData\fd6f3bce6709b121a895d042d343d71f317d74e7
 # environment
 TMP = C:\Users\Asus\AppData\Local\Temp
 # environment
@@ -63,7 +63,7 @@ SystemDrive = C:
 # environment
 CommonProgramFiles(x86) = C:\Program Files (x86)\Common Files
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-207a5bd8-13a3-498b-a673-15cd33819911-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-f830f121-3f30-43f8-9bfe-1cfeec9ce07c-sock
 # environment
 VSCODE_CWD = C:\Users\Asus\AppData\Local\Programs\Microsoft VS Code
 # environment
@@ -93,7 +93,7 @@ ProgramW6432 = C:\Program Files
 # automatic
 %F = $(notdir $%)
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_2856_WVDQVQEEKNTXBBPW
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_3300_JJJHINJGQLLCQUIC
 # environment
 VSCODE_PIPE_LOGGING = true
 # environment
@@ -153,7 +153,7 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 158 Stepping 10, GenuineIntel
 # environment
 OS = Windows_NT
 # environment
-VSCODE_IPC_HOOK = \\.\pipe\0fa17afad6f8282a945944de898e061c-1.54.1-main-sock
+VSCODE_IPC_HOOK = \\.\pipe\0fa17afad6f8282a945944de898e061c-1.54.2-main-sock
 # environment
 HOMEPATH = \Users\Asus
 # environment
@@ -199,7 +199,7 @@ PROCESSOR_LEVEL = 6
 # environment
 FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
 # environment
-VSCODE_PID = 2856
+VSCODE_PID = 3300
 # environment
 USERDOMAIN_ROAMINGPROFILE = ROGER
 # variable set hash-table stats:
@@ -211,9 +211,9 @@ USERDOMAIN_ROAMINGPROFILE = ROGER
 
 # Directories
 
-# . (key c:/Users/Asus/Documents/PlatformIO/Projects/8266_tests, mtime 1614463185): 10 files, no impossibilities.
+# . (key c:/Users/Asus/Desktop/RadioAPI, mtime 1615505931): 14 files, no impossibilities.
 
-# 10 files, no impossibilities in 1 directories.
+# 14 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -270,12 +270,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 17 / storage = 131 B / avg = 7 B
-# current buf: size = 8162 B / used = 131 B / count = 17 / avg = 7 B
+# strcache buffers: 1 (0) / strings = 21 / storage = 184 B / avg = 8 B
+# current buf: size = 8162 B / used = 184 B / count = 21 / avg = 8 B
 
-# strcache performance: lookups = 19 / hit rate = 10%
+# strcache performance: lookups = 23 / hit rate = 8%
 # hash-table stats:
-# Load=17/8192=0%, Rehash=0, Collisions=1/19=5%
-# Finished Make data base on Thu Mar 11 20:30:37 2021
+# Load=21/8192=0%, Rehash=0, Collisions=1/23=4%
+# Finished Make data base on Mon Mar 15 01:48:31 2021
 
  

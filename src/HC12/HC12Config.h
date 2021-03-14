@@ -1,5 +1,6 @@
 #pragma once
-#include <string>
+
+#include "HC12_std_string_HAL.h"
 
 #include "HC12ConfigParser.h"
 
@@ -39,7 +40,7 @@ public:
 /* === Individual parameter configuration below === */
 
 private:
-    int fuse = -1;
+    long fuse = -1;
     /*
     AT+FUx
     FU1: low current(3.6mA), short comm distance
@@ -51,9 +52,9 @@ private:
     */
 public:
     // [ 1, 2, 3, 4 ]
-    void set_radio_fuse(int fuse);
-    int  get_radio_fuse();
-    static bool is_valid_radio_fuse(int fuse);
+    void set_radio_fuse(long fuse);
+    long  get_radio_fuse();
+    static bool is_valid_radio_fuse(long fuse);
     // OK+FUx
     void parse_radio_fuse_AT(std::string);
     // AT+FUx
@@ -64,7 +65,7 @@ public:
 /* ======================================================= */
 
 private:
-    int baudrate = -1;
+    long baudrate = -1;
     /*
     AT+B<baudrate>
 
@@ -81,10 +82,10 @@ private:
     */
 public:
     // [ 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 ]
-    void set_radio_baudrate(int baudrate);
-    int  get_radio_baudrate();
-    static int get_factory_default_baudrate();
-    static bool is_valid_radio_baudrate(int baudrate);
+    void set_radio_baudrate(long baudrate);
+    long  get_radio_baudrate();
+    static long get_factory_default_baudrate();
+    static bool is_valid_radio_baudrate(long baudrate);
     // OK+Bxxxx
     void parse_radio_baudrate_AT(std::string);
     // AT+Bxxx
@@ -95,7 +96,7 @@ public:
 /* ======================================================= */
 
 private:
-    int channel = -1;
+    long channel = -1;
     /*
     AT+C<channel> [1-127] (>100 not reliable range)
     Close range (<10m -> use with spaces between used channels [skipping 1])
@@ -105,9 +106,9 @@ private:
     */
 public:
     // [1-127]
-    void set_radio_channel(int radio_channel);
-    int  get_radio_channel();
-    static bool is_valid_radio_channel(int radio_channel);
+    void set_radio_channel(long radio_channel);
+    long  get_radio_channel();
+    static bool is_valid_radio_channel(long radio_channel);
     // OK+C001
     void parse_radio_channel_AT(std::string);
     // AT+Cx
@@ -118,7 +119,7 @@ public:
 /* ======================================================= */
 
 private:
-    int radio_power = -1;
+    long radio_power = -1;
     /*
         AT+P<radio_power> [1-8]
         where <radio_power> = 1 number:
@@ -135,9 +136,9 @@ private:
     */
 public:
     // [1-8]
-    void set_radio_power(int radio_power);
-    int  get_radio_power(void);
-    static bool is_valid_radio_power(int radio_power);
+    void set_radio_power(long radio_power);
+    long  get_radio_power(void);
+    static bool is_valid_radio_power(long radio_power);
     // OK+RP:+20dBm
     void parse_radio_power_AT(std::string);
     //AT+Px

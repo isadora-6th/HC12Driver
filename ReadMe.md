@@ -9,19 +9,11 @@ Target framework:
 
 Target platfroms:
 - `Esp8266`
-    > Currently in progress
+    > Done and tested
 - `Esp32`
-    > Not checked yet
+    > Done, **NOT** tested
 - `Arduino nano`
-    > Expected problems with `std::string` maybe converter functions will be added;
-
-
-## Warning... work in progress
-Driver still needs to be written, and all tests must be done before usage
-70% done, but here is still some to go.  
-
-Also Warnings from... `#define XXX_WARNING(X)` has some... problems
-could be replaced by #define before lib include still thinking.  
+    > Done, **NOT** tested (done port std::string)
 
 # Usage
 Refer to `src/HC12/HC12Config.h` and `src/HC12/HC12Driver.h` for detailed info.  
@@ -31,11 +23,14 @@ Actually `HC12Driver` class replaces `Serial` usage for HC-12 communication.
 # Example
 
 ```cpp
+
     #define SET_PIN        16
     #define CHANNEL_TO_SET 14
     #define RADIO_SERIAL   Serial
 
-    HC12Driver driver(&Serial, SET_PIN, HC12Driver::CONFIGURE);
+    RADIO_SERIAL.begin(921600);
+
+    HC12Driver driver(&RADIO_SERIAL, SET_PIN, HC12Driver::CONFIGURE);
     driver.setExpectedBaudrate(9600);
     driver.checkPresence();
     
@@ -43,7 +38,7 @@ Actually `HC12Driver` class replaces `Serial` usage for HC-12 communication.
         // device not connected (or not detected)
         return;
     }
-
+ 
     /* === Configuration Part ===*/
     HC12Config config = driver.readDeviceConfiguration();
     if( !config.is_valid() ){
@@ -54,18 +49,30 @@ Actually `HC12Driver` class replaces `Serial` usage for HC-12 communication.
     config.set_radio_channel( CHANNEL_TO_SET );
     if( !driver.updateDeviceConfiguration(config) ){
         // Config change failed, consider edit timings in HC12Driver.cpp
-        /* updateDeviceConfiguration also 
-            edits getSavedDeviceConfiguration() state on success*/
+        // updateDeviceConfiguration also edits getSavedDeviceConfiguration() state on success
     }
 
     driver.setState(HC12Driver::WORKING);
-    
-    driver.println("Hello my dear friend");
     config.set_radio_power( 7 );
     driver.updateDeviceConfiguration(config);
 
-    driver.println("When state::working => auto returns to working after config update");   
+    #ifdef ESP32
+        driver.getSerial()->updateBaudRate(921600);
+    #endif
+    #ifdef ESP8266
+        driver.getSerial()->begin(921600);
+    #endif
+    #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)
+        driver.getSerial()->begin(921600);
+    #endif
+
+    delay(150);
+
+    driver.println("Hello my dear friend");
+    driver.println("When state working => auto returns to working after update");   
     driver.println("All Serial functions now available from driver");
+
+    driver.println(driver.getSavedDeviceConfiguration().to_string().c_str());    
     
 
 ```
