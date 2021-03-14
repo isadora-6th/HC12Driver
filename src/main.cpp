@@ -2,8 +2,6 @@
 #include "HC12/HC12Config.h"
 #include "HC12/HC12Driver.h"
 
-#define X_FUNCT() Serial.println(String(__PRETTY_FUNCTION__)+String(__LINE__))
-
 void setup(){
 
     #define SET_PIN        16
@@ -20,7 +18,7 @@ void setup(){
         // device not connected (or not detected)
         return;
     }
-
+ 
     /* === Configuration Part ===*/
     HC12Config config = driver.readDeviceConfiguration();
     if( !config.is_valid() ){
@@ -40,6 +38,7 @@ void setup(){
 
 
     driver.getSerial()->updateBaudRate(921600);
+    delay(150);
 
     driver.println("Hello my dear friend");
     driver.println("When state working => auto returns to working after update");   

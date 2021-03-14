@@ -1,14 +1,19 @@
 #include "HC12Driver.h"
 
 #define HC12Driver_STATE_CHANGE_TIME 50
+#define HC12Driver_BAUD_CHANGE_TIME 150
 #define HC12Driver_AT_SEND_WAIT_TIME 300
 
+#ifdef ESP8266
+    #define HC12Driver_COMPAT_BAUD_CHANGE(serial_ptr, baudrate) serial_ptr->updateBaudRate(baudrate);
+    #define HC12Driver_COMPAT_GET_BAUD_SPEED(serial_ptr) serial_ptr->baudRate()
+#endif
 HC12Driver::HC12Driver(HardwareSerial* serial, int set_pin, STATE state_start){
     setSerial(serial);
     setSetPin(set_pin);
     setState(state_start);
-
-    current_config.set_factory_default();
+    is_forced_presence = false;
+    is_device_present = false;
 }
 
 HardwareSerial* HC12Driver::getSerial(){
@@ -72,16 +77,20 @@ bool HC12Driver::updateDeviceConfiguration(HC12Config input_config){
         std::string at_to_send = input_config.radio_channel_AT_string();
         std::string response = send_AT(at_to_send, HC12Driver_AT_SEND_WAIT_TIME);
         int channel = HC12ConfigParser::parse_radio_channel_AT(response);
-        
-        current_config.set_radio_channel(channel);
+
+        if(HC12Config::is_valid_radio_channel(channel)){
+            current_config.set_radio_channel(channel);
+        }
     }
     
     if(input_config.get_radio_power() != current_config.get_radio_power()){
         std::string at_to_send = input_config.radio_power_AT_string();
         std::string response = send_AT(at_to_send, HC12Driver_AT_SEND_WAIT_TIME);
         int power = HC12ConfigParser::parse_radio_power_AT(response);
-        
-        current_config.set_radio_power(power);
+
+        if(HC12Config::is_valid_radio_power(power)){
+            current_config.set_radio_power(power);
+        }
     }
 
     if(input_config.get_radio_fuse() != current_config.get_radio_fuse()){
@@ -89,7 +98,9 @@ bool HC12Driver::updateDeviceConfiguration(HC12Config input_config){
         std::string response = send_AT(at_to_send, HC12Driver_AT_SEND_WAIT_TIME);
         int fuse = HC12ConfigParser::parse_radio_fuse_AT(response);
         
-        current_config.set_radio_fuse(fuse);
+        if(HC12Config::is_valid_radio_fuse(fuse)){
+            current_config.set_radio_fuse(fuse);
+        }
     }
 
     if(input_config.get_radio_baudrate() != current_config.get_radio_baudrate()){
@@ -97,7 +108,9 @@ bool HC12Driver::updateDeviceConfiguration(HC12Config input_config){
         std::string response = send_AT(at_to_send, HC12Driver_AT_SEND_WAIT_TIME);
         int baud = HC12ConfigParser::parse_radio_baudrate_AT(response);
         
-        current_config.set_radio_baudrate(baud);
+        if(HC12Config::is_valid_radio_baudrate(baud)){
+            current_config.set_radio_baudrate(baud);
+        }
     }
 
     setState(last_state);
@@ -121,7 +134,8 @@ bool HC12Driver::factoryReset(){
     return current_config == default_config;
 }
 
-void HC12Driver::setState(STATE){
+void HC12Driver::setState(STATE state){
+    this->state = state;
     digitalWrite(set_pin, state);
     delay(HC12Driver_STATE_CHANGE_TIME);
 }
@@ -156,8 +170,14 @@ bool HC12Driver::isForcedPresence(){
 
 std::string HC12Driver::send_AT(std::string at_string, int time_wait) {
     //Algo add here
-    if( serial->baudRate() != current_config.get_radio_baudrate() ){
-        //serial->updateBaudRate(current_config.get_radio_baudrate());
+    int baudrate_speed = HC12Config::get_factory_default_baudrate();
+    if(current_config.is_valid_radio_baudrate( current_config.get_radio_baudrate() )){
+        baudrate_speed = current_config.get_radio_baudrate();
+    }
+    
+    if( HC12Driver_COMPAT_GET_BAUD_SPEED(serial) != baudrate_speed ){
+        HC12Driver_COMPAT_BAUD_CHANGE(serial, baudrate_speed);
+        delay(HC12Driver_BAUD_CHANGE_TIME);
     }
     clean_input_output();
 

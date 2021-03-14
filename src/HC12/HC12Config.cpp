@@ -3,44 +3,20 @@
 
 #ifdef ESP8266
     #include <Arduino.h>
-    #define HC12_CONFIG_SET_OUT_OF_RANGE(X) Serial.println(std::string(X).c_str())
 #else
     #include <stdexcept>
     #include <iostream>
-    #define HC12_CONFIG_SET_OUT_OF_RANGE(X) std::cout << X << '\n'
-
 #endif
 
-void HC12Config::parse_parameters_AT_response(std::string text){
+bool HC12Config::parse_parameters_AT_response(std::string text){
     // OK+FU3 \r\n    OK+B9600 \r\n   OK+C001 \r\n OK+RP：+20dBm \r\n
-    int found_index = 0;
-    int begin = 0;
-    while (text.find("OK+",begin)){
-        int end = text.find(" ",begin);
-        if(end == -1){
-            end = text.length();
-        }
-        switch (found_index){
-        case 0:
-            parse_radio_fuse_AT( text.substr(begin, end - begin) );
-            break;
-        case 1:
-            parse_radio_baudrate_AT( text.substr(begin, end - begin) );
-            break;
-        case 2:
-            parse_radio_channel_AT( text.substr(begin, end - begin) );
-            break;
-        case 3:
-            parse_radio_power_AT( text.substr(begin, end - begin) );
-            break;
-        
-        default:
-            return;
-        }
-        found_index += 1;
-        begin += 1;
-    }
-    
+    HC12Config in = HC12ConfigParser::parse_parameters_AT_response(text);
+    this->fuse = in.fuse;
+    this->baudrate = in.baudrate;
+    this->channel = in.channel;
+    this->radio_power = in.radio_power;
+
+    return is_valid();
 }
 
 void HC12Config::set_factory_default(){
@@ -78,28 +54,24 @@ std::string HC12Config::to_string(){
 }
 
 bool HC12Config::is_valid(){
-    return fuse != -1 && baudrate != -1 && channel != -1 && radio_power != -1;
+    return is_valid_radio_fuse(fuse) &&
+           is_valid_radio_baudrate(baudrate) &&
+           is_valid_radio_channel(channel) &&
+           is_valid_radio_power(radio_power);
 }
 
 bool HC12Config::operator==(const HC12Config& other){
     return 
-        fuse == fuse &&
-        baudrate == baudrate &&
-        channel == channel &&
-        radio_power == radio_power;
+        fuse == other.fuse &&
+        baudrate == other.baudrate &&
+        channel == other.channel &&
+        radio_power == other.radio_power;
 }
 
 /* === Individual parameter configuration below === */
 
 void HC12Config::set_radio_fuse(int fuse){
     // [ 1, 2, 3, 4 ]
-    if( fuse < 1 || fuse > 4 ){
-        HC12_CONFIG_SET_OUT_OF_RANGE(
-            std::string("Fuses only from [1-4] allowed not: ")+
-            std::to_string(fuse)
-            );
-        return;
-    }
     this->fuse = fuse;
 }
 
@@ -107,11 +79,12 @@ int HC12Config::get_radio_fuse(){
     return fuse;
 }
 
+bool HC12Config::is_valid_radio_fuse(int fuse){
+    return fuse > 1 && fuse < 5;
+}
+
 void HC12Config::parse_radio_fuse_AT(std::string text){
     int value = HC12ConfigParser::parse_radio_fuse_AT(text);
-    if(value == -1){
-        return;
-    }
     set_radio_fuse(value);
 }
 
@@ -130,34 +103,34 @@ std::string HC12Config::radio_fuse_to_string(){
 
 void HC12Config::set_radio_baudrate(int baudrate){
     // [ 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 ]
-    switch (baudrate) {
-    case 1200:
-    case 2400:
-    case 4800:
-    case 9600:
-    case 19200:
-    case 38400:
-    case 57600:
-    case 115200:
-        break;
-    default:
-        HC12_CONFIG_SET_OUT_OF_RANGE(
-            std::string("Baudrate not allowed: ")+
-            std::to_string(baudrate));
-        return;
-    }
     this->baudrate = baudrate;
 }
 
 int  HC12Config::get_radio_baudrate(){
     return baudrate;
 }
+int  HC12Config::get_factory_default_baudrate(){
+    return 9600;
+}
+
+bool HC12Config::is_valid_radio_baudrate(int baudrate){
+    switch (baudrate) {
+        case 1200:
+        case 2400:
+        case 4800:
+        case 9600:
+        case 19200:
+        case 38400:
+        case 57600:
+        case 115200:
+            return true;
+    default:
+        return false;
+    }
+}
 
 void HC12Config::parse_radio_baudrate_AT(std::string text){
     int value = HC12ConfigParser::parse_radio_baudrate_AT(text);
-    if(value == -1){
-        return;
-    }
     set_radio_baudrate(value);
 }
 
@@ -176,12 +149,6 @@ std::string HC12Config::radio_baudrate_to_string(){
 
 void HC12Config::set_radio_channel(int radio_channel){
     // [1-127]
-    if( radio_channel < 1 || radio_channel > 127 ){
-        HC12_CONFIG_SET_OUT_OF_RANGE(
-            std::string("Channel not allowed [1 - 127]: ")+
-            std::to_string(radio_channel));
-        return;
-    }
     this->channel = radio_channel;
 }
 
@@ -189,11 +156,12 @@ int  HC12Config::get_radio_channel(){
     return channel;
 }
 
+bool HC12Config::is_valid_radio_channel(int radio_channel){
+    return radio_channel > 0 && radio_channel < 128;
+}
+
 void HC12Config::parse_radio_channel_AT(std::string text){
     int value = HC12ConfigParser::parse_radio_baudrate_AT(text);
-    if(value == -1){
-        return;
-    }
     set_radio_channel(value);
 }
 
@@ -216,12 +184,6 @@ std::string HC12Config::radio_channel_to_string(){
 
 void HC12Config::set_radio_power(int radio_power){
     // [1-8] 
-    if( radio_power < 1 || radio_power > 8 ){
-        HC12_CONFIG_SET_OUT_OF_RANGE(
-            std::string("Radio power not allowed [1 - 8]: ")+
-            std::to_string(radio_power));
-        return;
-    }
     this->radio_power = radio_power;
 }
 
@@ -229,11 +191,12 @@ int  HC12Config::get_radio_power(void){
     return radio_power;
 }
 
+bool HC12Config::is_valid_radio_power(int radio_power){
+    return radio_power > 0 && radio_power < 9;
+}
+
 void HC12Config::parse_radio_power_AT(std::string text){
     int value = HC12ConfigParser::parse_radio_baudrate_AT(text);
-    if(value == -1){
-        return;
-    }
     set_radio_power(value);
 }
 

@@ -20,8 +20,9 @@
 class HC12Config {
 public:
     /* Parses line in format:
-        OK+FU3 OK+B9600 OK+C001 OK+RP：+20dBm */
-    void parse_parameters_AT_response(std::string);
+        OK+FU3 OK+B9600 OK+C001 OK+RP：+20dBm
+        returns is_valid() */
+    bool parse_parameters_AT_response(std::string);
     
     /* factory default setting, FU3, Baud 9600, Channel 1, Power 8 */
     void set_factory_default();
@@ -52,6 +53,7 @@ public:
     // [ 1, 2, 3, 4 ]
     void set_radio_fuse(int fuse);
     int  get_radio_fuse();
+    static bool is_valid_radio_fuse(int fuse);
     // OK+FUx
     void parse_radio_fuse_AT(std::string);
     // AT+FUx
@@ -81,6 +83,8 @@ public:
     // [ 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 ]
     void set_radio_baudrate(int baudrate);
     int  get_radio_baudrate();
+    static int get_factory_default_baudrate();
+    static bool is_valid_radio_baudrate(int baudrate);
     // OK+Bxxxx
     void parse_radio_baudrate_AT(std::string);
     // AT+Bxxx
@@ -103,6 +107,7 @@ public:
     // [1-127]
     void set_radio_channel(int radio_channel);
     int  get_radio_channel();
+    static bool is_valid_radio_channel(int radio_channel);
     // OK+C001
     void parse_radio_channel_AT(std::string);
     // AT+Cx
@@ -132,6 +137,7 @@ public:
     // [1-8]
     void set_radio_power(int radio_power);
     int  get_radio_power(void);
+    static bool is_valid_radio_power(int radio_power);
     // OK+RP:+20dBm
     void parse_radio_power_AT(std::string);
     //AT+Px
