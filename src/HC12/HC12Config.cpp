@@ -81,6 +81,14 @@ bool HC12Config::is_valid(){
     return fuse != -1 && baudrate != -1 && channel != -1 && radio_power != -1;
 }
 
+bool HC12Config::operator==(const HC12Config& other){
+    return 
+        fuse == fuse &&
+        baudrate == baudrate &&
+        channel == channel &&
+        radio_power == radio_power;
+}
+
 /* === Individual parameter configuration below === */
 
 void HC12Config::set_radio_fuse(int fuse){

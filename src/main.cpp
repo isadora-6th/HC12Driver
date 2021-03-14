@@ -2,6 +2,7 @@
 #include "HC12/HC12Config.h"
 #include "HC12/HC12Driver.h"
 
+#define X_FUNCT() Serial.println(String(__PRETTY_FUNCTION__)+String(__LINE__))
 
 void setup(){
 
@@ -9,7 +10,9 @@ void setup(){
     #define CHANNEL_TO_SET 14
     #define RADIO_SERIAL   Serial
 
-    HC12Driver driver(&Serial, SET_PIN, HC12Driver::CONFIGURE);
+    RADIO_SERIAL.begin(921600);
+
+    HC12Driver driver(&RADIO_SERIAL, SET_PIN, HC12Driver::CONFIGURE);
     driver.setExpectedBaudrate(9600);
     driver.checkPresence();
     
@@ -32,14 +35,17 @@ void setup(){
     }
 
     driver.setState(HC12Driver::WORKING);
-    
-    driver.println("Hello my dear friend");
     config.set_radio_power( 7 );
     driver.updateDeviceConfiguration(config);
 
+
+    driver.getSerial()->updateBaudRate(921600);
+
+    driver.println("Hello my dear friend");
     driver.println("When state working => auto returns to working after update");   
     driver.println("All Serial functions now available from driver");
-    
+
+    driver.println(driver.getSavedDeviceConfiguration().to_string().c_str());    
 }
 
 void loop(){

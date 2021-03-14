@@ -25,8 +25,8 @@ HC12ConfigParser::HC12ConfigParser(){
 
 int HC12ConfigParser::parse_radio_fuse_AT(std::string text){
     // OK+FUx
-    int start = text.find("OK+FU");
-    if( start == -1 ){
+    std::size_t start = text.find("OK+FU");
+    if( start == std::string::npos ){
         HC12_CONFIG_PARSE_ERROR("fuse parsing error \"OK+FU\" not found");
         return -1;
     }
@@ -48,8 +48,8 @@ int HC12ConfigParser::parse_radio_fuse_AT(std::string text){
 int HC12ConfigParser::parse_radio_baudrate_AT(std::string text){
     // OK+Bxxxx
 
-    int start = text.find("OK+B");
-    if( start == -1 ){
+    std::size_t start = text.find("OK+B");
+    if( start == std::string::npos ){
         HC12_CONFIG_PARSE_ERROR("fuse parsing error \"OK+B\" not found");
         return -1;
     }
@@ -72,12 +72,15 @@ int HC12ConfigParser::parse_radio_baudrate_AT(std::string text){
 int HC12ConfigParser::parse_radio_channel_AT(std::string text){
     // OK+Cxxxx
 
-    int start = text.find("OK+C");
-    if( start == -1 ){
+    std::size_t start = text.find("OK+C");
+    if( start == std::string::npos ){
         HC12_CONFIG_PARSE_ERROR("fuse parsing error \"OK+C\" not found");
         return -1;
     }
-    int end = text.find(" ", start);
+    std::size_t end = text.find(" ", start);
+    if(end == std::string::npos){
+        end = text.length();
+    }
     std::string data = text.substr( start + 4, end - start);
     // data "001"
 
@@ -97,30 +100,33 @@ int HC12ConfigParser::parse_radio_channel_AT(std::string text){
 int HC12ConfigParser::parse_radio_power_AT(std::string text){
     // OK+Pxxxx
 
-    int start = text.find("OK+RP:");
-    if( start == -1 ){
+    std::size_t start = text.find("OK+RP:");
+    if( start == std::string::npos ){
         HC12_CONFIG_PARSE_ERROR("fuse parsing error \"OK+C\" not found");
         return -1;
     }
-    int end = text.find(" ", start);
+    std::size_t end = text.find(" ", start);
+    if(end == std::string::npos){
+        end = text.length();
+    }
     std::string data = text.substr( start + 6, end - start);
     
     int value = -1;
-    if( text.find("-1dBm") != -1 ){
+    if( text.find("-1dBm") != std::string::npos ){
         value = 1;
-    } else if(text.find("+2dBm") != -1 ){
+    } else if(text.find("+2dBm") != std::string::npos ){
         value = 2;
-    } else if(text.find("+5dBm") != -1 ){
+    } else if(text.find("+5dBm") != std::string::npos ){
         value = 3;
-    } else if(text.find("+8dBm") != -1 ){
+    } else if(text.find("+8dBm") != std::string::npos ){
         value = 4;
-    } else if(text.find("+11dBm") != -1 ){
+    } else if(text.find("+11dBm") != std::string::npos ){
         value = 5;
-    } else if(text.find("+14dBm") != -1 ){
+    } else if(text.find("+14dBm") != std::string::npos ){
         value = 6;
-    } else if(text.find("+17dBm") != -1 ){
+    } else if(text.find("+17dBm") != std::string::npos ){
         value = 7;
-    } else if(text.find("+20dBm") != -1 ){
+    } else if(text.find("+20dBm") != std::string::npos ){
         value = 8;
     }
 

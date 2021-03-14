@@ -43,6 +43,7 @@
 */
 class HC12Driver : public Stream {
 public:
+    /* Also works as HIGH/LOW for set pin */
     enum STATE : int {
         CONFIGURE = 0,
         WORKING = 1
@@ -55,10 +56,6 @@ private:
     bool is_device_present;
     bool is_forced_presence;
 public:
-    enum STATE : int {
-        CONFIGURE = 0,
-        WORKING = 1
-    };
 
     HC12Driver(HardwareSerial*, int set_pin = 16, STATE state_start = CONFIGURE);
 
@@ -82,7 +79,7 @@ public:
     /* Apply changes to external module if changes spoted */
     bool updateDeviceConfiguration(HC12Config);
 
-    void factoryReset();
+    bool factoryReset();
 
     void setState(STATE);
     STATE getState();
@@ -100,4 +97,7 @@ public:
     // Ignore presence state (if RX not connected, or manual work using buttons)
     void forcePresence(bool);
     bool isForcedPresence();
+private:
+    std::string send_AT(std::string at_string, int time_wait);
+    void clean_input_output();
 };
