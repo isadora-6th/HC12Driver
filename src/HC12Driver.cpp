@@ -165,9 +165,11 @@ int HC12Driver::peek() {
     return serial->peek();
 }
 
+#ifdef ESP32
 void HC12Driver::flush(){
     serial->flush();
 }
+#endif
 
 size_t HC12Driver::write(uint8_t data){
     return serial->write(data);
