@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include "HC12/HC12Config.h"
-#include "HC12/HC12Driver.h"
+#include "HC12Config.h"
+#include "HC12Driver.h"
 
 void setup(){
 
