@@ -1,0 +1,35 @@
+{
+    "name": "HC12Driver",
+    "version": "1.0.0",
+    "owner": "isadora-6th",
+    "authors":
+    {
+        "name": "Ilya Suvorov",
+        "email": "ilya.suvorov.graevka@mail.ru"
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/isadora-6th/HC12Driver.git"
+    },
+    "examples": [
+        {
+            "name": "Configure and use",
+            "base": "examples/usage",
+            "files": [
+                "platformio.ini",
+                "main.cpp"
+            ]
+        },
+        {
+            "name": "Blink",
+            "base": "examples/blink",
+            "files": ["blink.cpp", "blink.h"]
+        }
+    ],
+    "platforms": ["espressif32", "espressif8266", "atmelavr"],
+    "export": {
+        "exclude": [ "HC-12_english_datasheets.pdf" ]
+    }
+    
+}
