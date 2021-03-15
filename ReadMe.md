@@ -21,7 +21,7 @@ Want to add lib to platformIO index, but... to Lazy for it, so use direct Git li
 ```ini
 lib_deps = 
     HC12Driver ; NOT working now (NOT in INDEX yet)
-    https://github.com/isadora-6th/RadioAPI.git ; Working, if you have access to repo
+    https://github.com/isadora-6th/HC12Driver.git ; Working, if you have access to repo
 ```
 if you are using git, update lib in project:
  - open platformio tab
