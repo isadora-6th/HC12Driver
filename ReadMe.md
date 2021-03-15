@@ -147,5 +147,12 @@ Create lib for mapApi Abstraction.
 - MapCsv_v2 / v3
     > R8, bind to project `*has idea problems*`  
 
-converters `Madrix <--> Csv`, `Jinx <--> Csv`; 
-Other
+Create lib of converters: 
+- `Madrix <--> Csv`;
+    > now have Madrix -> `MapCsv_v1`
+- `Jinx <--> Csv`;  
+- `Autocad <--> Csv`;
+    > research showed that:  
+        - Autocad allows saving for inkSpace -> free open source code  
+        - other formats to parse  
+        Want use `Qt` framework for this task, so GUI expected
