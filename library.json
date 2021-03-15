@@ -20,11 +20,6 @@
                 "platformio.ini",
                 "main.cpp"
             ]
-        },
-        {
-            "name": "Blink",
-            "base": "examples/blink",
-            "files": ["blink.cpp", "blink.h"]
         }
     ],
     "platforms": ["espressif32", "espressif8266", "atmelavr"],
