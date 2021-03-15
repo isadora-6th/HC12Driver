@@ -23,6 +23,13 @@ lib_deps =
     HC12Driver ; NOT working now (NOT in INDEX yet)
     https://github.com/isadora-6th/RadioAPI.git ; Working, if you have access to repo
 ```
+if you are using git, update lib in project:
+ - open platformio tab
+ - Quick Access -> Miscellaneous
+ - PlatfromIO Core CLI
+ - `pio lib update`
+ - no indication  
+
 also you can add to `lib` folder in your `platformIO` project  
 or if you prefer Arduino, copy to `Arduino/libraries`  
 > ofcource can copy to your sketch foleder, will work (better to place in folder and include with "folder_name/HC12Driver.h" +8 files in Arduino tabs will make mess)
