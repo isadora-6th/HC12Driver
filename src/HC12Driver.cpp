@@ -67,8 +67,10 @@ HC12Config HC12Driver::readDeviceConfiguration(){
     std::string recieved = send_AT(at_to_send, HC12Driver_AT_SEND_WAIT_TIME);
 
     current_config.parse_parameters_AT_response(recieved);
-
+    
     setState(last_state);
+
+    is_device_present = current_config.is_valid();
     return current_config;
 }
 
