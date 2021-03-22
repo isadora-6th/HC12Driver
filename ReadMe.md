@@ -1,8 +1,8 @@
 # HC-12 Driver library
 
 This library was made to surely configure HC-12 module on the go and use it without bothering about `Serial + Set_Pin` state.  
-Made because local solution (R8) had problems with portability and reliability.  
-Also large testing expected for this library. (Like using all set_configures and recheck all state change failure causes).
+Made because local solution had problems with portability and reliability.  
+Also large testing expected for this library.
 
 Target framework:  
 - `Arduino Framework`
@@ -17,7 +17,7 @@ Target platfroms:
 
 # Instalation
 
-Want to add lib to platformIO index, but... to Lazy for it, so use direct Git link instead.
+Want to add lib to platformIO index, but not now -> so use direct Git link instead.
 ```ini
 lib_deps = 
     HC12Driver ; NOT working now (NOT in INDEX yet)
@@ -90,7 +90,7 @@ void setup(){
 
     delay(150);
 
-    driver.println("Hello my dear friend");
+    driver.println("Hello, driver allows changing arguments during work");
     driver.println("When state working => auto returns to working after update");   
     driver.println("All Serial functions now available from driver");
 
@@ -131,35 +131,3 @@ Add `#define` for your platforms at following files:
     - `#define compat_std_stoi( IN_STRING, OUT_VAR )`
     > Converts std::string to long (0 for failure)  
     https://www.cplusplus.com/reference/cstdlib/atol/
-
-# Next stuff to expect
-Create lib that makes abstraction for `Radio work`
-
-Inputs Arduino `Stream` interface
-- V0
-    - RadioInV0
-    - RadioOutV0
-    - RadioGroupV0
-- V1
-    - RadioInV1
-    - RadioOutV1
-    - RadioGroupV1
-    > That mode that has device address in each frame  
-      Like allow controll by single radio multiple devices
-      (that 4xDumaru project with single controll point)  
-
-Create lib for mapApi Abstraction.
-- MapCsv_v1 
-    > already exist
-- MapCsv_v2 / v3
-    > R8, bind to project `*has idea problems*`  
-
-Create lib of converters: 
-- `Madrix <--> Csv`;
-    > now have Madrix -> `MapCsv_v1`
-- `Jinx <--> Csv`;  
-- `Autocad <--> Csv`;
-    > research showed that:  
-        - Autocad allows saving for inkSpace -> free open source code  
-        - other formats to parse  
-        Want use `Qt` framework for this task, so GUI expected
